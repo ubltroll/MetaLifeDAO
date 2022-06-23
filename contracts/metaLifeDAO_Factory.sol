@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract metaLifeDAOFactory is Ownable {
-    event NewMetaLifeDAO(address indexed creator, address dao, string name, string version);
+    event NewMetaLifeDAO(address dao, string version);
 
     mapping(address => bool) public acceptalToken;
 
@@ -31,16 +31,17 @@ contract metaLifeDAOFactory is Ownable {
         return _creatorForDAO[keccak256(abi.encodePacked(version))];
     }
 
-    function setDAOCreator(string memory version, address creator) external onlyOwner{
-        require(keccak256(abi.encodePacked(ImetaLifeDAOCreator(creator).version())) == keccak256(abi.encodePacked(version)), "Wrong version");
+    function setDAOCreator(address creator) external onlyOwner{
+        string memory version = ImetaLifeDAOCreator(creator).version();
 
         _creatorForDAO[keccak256(abi.encodePacked(version))] = creator;
     }
 
     function _create(string memory version, bytes memory param) internal returns(address dao){
-        dao = ImetaLifeDAOCreator(creatorForDAO(version)).createDAO(param);
-
-        emit NewMetaLifeDAO(msg.sender, dao, metaLifeDAOBase(payable(dao)).daoName(), version);
+        dao = ImetaLifeDAOCreator(creatorForDAO(version)).getNextAddress();
+        emit NewMetaLifeDAO(dao, ImetaLifeDAOCreator(creatorForDAO(version)).version());
+        address deployed = ImetaLifeDAOCreator(creatorForDAO(version)).createDAO(param);
+        assert(dao == deployed);
     }
 
     function createWithValue(string memory version, bytes memory param) external payable{
@@ -50,7 +51,7 @@ contract metaLifeDAOFactory is Ownable {
         _create(version, param);
     }
 
-    function createWithToken(string memory version, bytes memory param, address token) external payable{
+    function createWithToken(string memory version, bytes memory param, address token) external{
         require(acceptalToken[token], "Wrong token");
         IERC20(token).transferFrom(msg.sender, address(this), createFee[token]);
 

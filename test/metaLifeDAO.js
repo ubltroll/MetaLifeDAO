@@ -54,7 +54,7 @@ contract('metaLifeDAOfor Crowdfunding', (accounts) => {
     assert.equal(await daoCoin.balanceOf.call(accounts[0]), 100001);
     assert.equal(await daoCoin.getVotes.call(accounts[0]), 100001);
     assert.equal(await daoCoin.proposalState.call(0), 4); //Success
-    
+
     await daoCoin.fundWithValue(
       { value: 400, from: accounts[0]});
 
@@ -81,7 +81,7 @@ contract('metaLifeDAO factory', (accounts) => {
      factory = await DAOfactory.new();
      creator101 = await creator_withCoin.new();
      await factory.setTokenFee(zero_address, 0, true, {from: accounts[0]});
-     await factory.setDAOCreator("MetaLifeDAO:101:withCoin", creator101.address);
+     await factory.setDAOCreator(creator101.address);
      /*
      pack(['string', 'string', 'string', 'uint64', 'uint256', 'address[]', 'uint256[]'],
       ["testDAO", "testURI", "test", 100, 4500, ['0x538fD2884b743b3FEfE8D495c95C81db9e83e58a'], [1000000]])

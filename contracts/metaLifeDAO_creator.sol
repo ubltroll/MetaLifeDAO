@@ -8,21 +8,52 @@ import "./governance/metaLifeDAO_NFTtoCoin.sol";
 import "./governance/metaLifeDAO_Crowdfund.sol";
 
 
-interface ImetaLifeDAOFactory{
-    function isMetaLifeDAOFactory() external view returns(bool);
-}
-
 interface ImetaLifeDAOCreator{
     function version() external view returns(string memory);
-    function createDAO(bytes memory param) external returns(address dao);
+    function createDAO(bytes memory param) external returns(address);
+    function getNextAddress() external view returns(address);
 }
 
-contract creator_withCoin is ImetaLifeDAOCreator{
-    function version() external pure override returns(string memory){
+abstract contract metaLifeDAOCreator is ImetaLifeDAOCreator{
+    function version() public pure override virtual returns(string memory);
+
+    function _createDAO(bytes memory param) internal virtual returns(address);
+
+    uint256 internal nonce;
+
+    function createDAO(bytes memory param) external override returns(address){
+        nonce += 1;
+        return _createDAO(param);
+    }
+
+    function getNextAddress() public view override returns(address){
+        //bytes32 _data = keccak256(abi.encodePacked(address(this), nonce));
+        //return address(uint160(uint256(_data)));
+        return addressFrom(address(this), nonce + 1);
+    }
+
+    function addressFrom(address _origin, uint _nonce) internal pure returns (address _address) {
+        bytes memory data;
+        if(_nonce == 0x00)          data = abi.encodePacked(bytes1(0xd6), bytes1(0x94), _origin, bytes1(0x80));
+        else if(_nonce <= 0x7f)     data = abi.encodePacked(bytes1(0xd6), bytes1(0x94), _origin, uint8(_nonce));
+        else if(_nonce <= 0xff)     data = abi.encodePacked(bytes1(0xd7), bytes1(0x94), _origin, bytes1(0x81), uint8(_nonce));
+        else if(_nonce <= 0xffff)   data = abi.encodePacked(bytes1(0xd8), bytes1(0x94), _origin, bytes1(0x82), uint16(_nonce));
+        else if(_nonce <= 0xffffff) data = abi.encodePacked(bytes1(0xd9), bytes1(0x94), _origin, bytes1(0x83), uint24(_nonce));
+        else                        data = abi.encodePacked(bytes1(0xda), bytes1(0x94), _origin, bytes1(0x84), uint32(_nonce));
+        bytes32 hash = keccak256(data);
+        assembly {
+            mstore(0, hash)
+            _address := mload(0)
+        }
+    }
+}
+
+contract creator_withCoin is metaLifeDAOCreator{
+    function version() public pure override returns(string memory){
         return "MetaLifeDAO:101:withCoin";
     }
 
-    function createDAO(bytes memory param) external override returns(address dao){
+    function _createDAO(bytes memory param) internal override returns(address dao){
         (string memory _daoName,
         string memory _daoURI,
         string memory _daoInfo,
@@ -34,12 +65,12 @@ contract creator_withCoin is ImetaLifeDAOCreator{
     }
 }
 
-contract creator_withMember is ImetaLifeDAOCreator{
-    function version() external pure override returns(string memory){
+contract creator_withMember is metaLifeDAOCreator{
+    function version() public pure override returns(string memory){
         return "MetaLifeDAO:105:withMember";
     }
 
-    function createDAO(bytes memory param) external override returns(address dao){
+    function _createDAO(bytes memory param) internal override returns(address dao){
         (string memory _daoName,
         string memory _daoURI,
         string memory _daoInfo,
@@ -50,12 +81,12 @@ contract creator_withMember is ImetaLifeDAOCreator{
     }
 }
 
-contract creator_NFT is ImetaLifeDAOCreator{
-    function version() external pure override returns(string memory){
+contract creator_NFT is metaLifeDAOCreator{
+    function version() public pure override returns(string memory){
         return "MetaLifeDAO:201:NFT";
     }
 
-    function createDAO(bytes memory param) external override returns(address dao){
+    function _createDAO(bytes memory param) internal override returns(address dao){
         (string memory _daoName,
         string memory _daoURI,
         string memory _daoInfo,
@@ -66,12 +97,12 @@ contract creator_NFT is ImetaLifeDAOCreator{
     }
 }
 
-contract creator_NFTtoCoin is ImetaLifeDAOCreator{
-    function version() external pure override returns(string memory){
+contract creator_NFTtoCoin is metaLifeDAOCreator{
+    function version() public pure override returns(string memory){
         return "MetaLifeDAO:202:NFTtoCoin";
     }
 
-    function createDAO(bytes memory param) external override returns(address dao){
+    function _createDAO(bytes memory param) internal override returns(address dao){
         (string memory _daoName,
         string memory _daoURI,
         string memory _daoInfo,
@@ -84,12 +115,12 @@ contract creator_NFTtoCoin is ImetaLifeDAOCreator{
     }
 }
 
-contract creator_Crowdfund is ImetaLifeDAOCreator{
-    function version() external pure override returns(string memory){
+contract creator_Crowdfund is metaLifeDAOCreator{
+    function version() public pure override returns(string memory){
         return "MetaLifeDAO:203:Crowdfund";
     }
-        
-    function createDAO(bytes memory param) external override returns(address dao){
+
+    function _createDAO(bytes memory param) internal override returns(address dao){
         (string memory _daoName,
         string memory _daoURI,
         string memory _daoInfo,
@@ -101,6 +132,6 @@ contract creator_Crowdfund is ImetaLifeDAOCreator{
         uint64 _fundingPeriod,
         address _starter)= abi.decode(param, (string,string,string,uint64,uint256,address,uint256,uint256,uint64,address));
         dao = address(new metaLifeDAOCrowdfund(_daoName, _daoURI, _daoInfo, votingPeriod_, quorumFactorInBP_,
-         _fundingToken, _fundingGoal, _fundingTokenToVotes, _fundingPeriod, _starter));
+            _fundingToken, _fundingGoal, _fundingTokenToVotes, _fundingPeriod, _starter));
     }
 }

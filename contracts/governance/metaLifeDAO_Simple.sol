@@ -10,10 +10,12 @@ abstract contract metaLifeDAOConfig is metaLifeDAOBase{
     uint256 internal _votingPeriod;
     uint256 internal _quorumFactorInBP;
 
+    event UpdateDAOMetaInfo();
+
     function proposalThreshold() public view virtual override returns(uint256){
         return _proposalThreshold;
     }
-    
+
     function votingDelay() public view virtual override returns(uint256){
         return 0;
     }
@@ -28,14 +30,32 @@ abstract contract metaLifeDAOConfig is metaLifeDAOBase{
 
     function setProposalThreshold (uint256 proposalThreshold_) public onlyGovernance{
         _proposalThreshold = proposalThreshold_;
+        emit UpdateDAOMetaInfo();
     }
 
     function setVotingPeriod (uint256 votingPeriod_) public onlyGovernance{
         _votingPeriod = votingPeriod_;
+        emit UpdateDAOMetaInfo();
     }
 
     function setQuorumFactorInBP(uint256 quorumFactorInBP_) public onlyGovernance{
         _quorumFactorInBP = quorumFactorInBP_;
+        emit UpdateDAOMetaInfo();
+    }
+
+    function setName (string memory _name) public onlyGovernance{
+        daoName = _name;
+        emit UpdateDAOMetaInfo();
+    }
+
+    function setURI (string memory _uri) public onlyGovernance{
+        daoURI = _uri;
+        emit UpdateDAOMetaInfo();
+    }
+
+    function setInfo (string memory _info) public onlyGovernance{
+        daoInfo = _info;
+        emit UpdateDAOMetaInfo();
     }
 
     constructor (
@@ -51,9 +71,9 @@ abstract contract metaLifeDAOConfig is metaLifeDAOBase{
 abstract contract metaLifeDAOiwthDelegation is metaLifeDAOBase{
     event DelegateChanged(address indexed delegator, address indexed fromDelegate, address indexed toDelegate);
     event DelegateVotesChanged(address indexed delegate, uint256 previousBalance, uint256 newBalance);
-    
+
     mapping(address => address) private _delegation;
-    
+
     function delegates(address account) public view virtual returns (address) {
         return _delegation[account];
     }
@@ -128,7 +148,7 @@ abstract contract metaLifeDAOSimple is metaLifeDAOiwthDelegation, metaLifeDAOCon
             ProposalVote storage proposalvote = _proposalVotes[proposalId];
             return (proposalvote.againstVotes, proposalvote.forVotes, proposalvote.abstainVotes);
         }
-    
+
     function _checkVote(uint256 proposalId, address account) internal virtual {
         ProposalVote storage proposalvote = _proposalVotes[proposalId];
 
@@ -169,5 +189,3 @@ abstract contract metaLifeDAOSimple is metaLifeDAOiwthDelegation, metaLifeDAOCon
         return proposalvote.forVotes > proposalvote.againstVotes;
     }
 }
-
-

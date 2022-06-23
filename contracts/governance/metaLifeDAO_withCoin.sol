@@ -27,7 +27,7 @@ abstract contract _metaLifeDAOwithCoin is ERC20, metaLifeDAOiwthDelegation, meta
     function getVotes(address account, uint256 blockNumber) public view override returns (uint256){
         return getPastVotes(account, blockNumber);
     }
-    
+
     //------------
     //ERC20 Module
     //------------
@@ -58,7 +58,7 @@ abstract contract _metaLifeDAOwithCoin is ERC20, metaLifeDAOiwthDelegation, meta
             return _delegation[account];
         }
     }
-    
+
     function getVotes(address account) public view virtual returns (uint256) {
         return _delegateCheckpoints[account].latest();
     }
@@ -104,14 +104,14 @@ abstract contract _metaLifeDAOwithCoin is ERC20, metaLifeDAOiwthDelegation, meta
     ) private {
         if (from != to && amount > 0) {
             if (from != address(0)) {
-                (uint256 oldValue, uint256 newValue) = _delegateCheckpoints[from].push(_delegateCheckpoints[to].latest() - amount);
+                (uint256 oldValue, uint256 newValue) = _delegateCheckpoints[from].push(_delegateCheckpoints[from].latest() - amount);
                 emit DelegateVotesChanged(from, oldValue, newValue);
             }
             if (to != address(0)) {
                 (uint256 oldValue, uint256 newValue) = _delegateCheckpoints[to].push(_delegateCheckpoints[to].latest() + amount);
                 emit DelegateVotesChanged(to, oldValue, newValue);
             }
-        } 
+        }
     }
 
     constructor (string memory _daoName,

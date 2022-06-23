@@ -49,21 +49,26 @@
 		},
 		"gasEstimates": null,
 		"methodIdentifiers": {
-			"isMetaLifeDAOFactory()": "426d7ab2"
+			"registerDAO(address,string)": "8bf1d7d8"
 		}
 	},
 	"abi": [
 		{
-			"inputs": [],
-			"name": "isMetaLifeDAOFactory",
-			"outputs": [
+			"inputs": [
 				{
-					"internalType": "bool",
-					"name": "",
-					"type": "bool"
+					"internalType": "address",
+					"name": "dao",
+					"type": "address"
+				},
+				{
+					"internalType": "string",
+					"name": "version",
+					"type": "string"
 				}
 			],
-			"stateMutability": "view",
+			"name": "registerDAO",
+			"outputs": [],
+			"stateMutability": "nonpayable",
 			"type": "function"
 		}
 	]

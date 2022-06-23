@@ -17,11 +17,24 @@
 				"outputs": [
 					{
 						"internalType": "address",
-						"name": "dao",
+						"name": "",
 						"type": "address"
 					}
 				],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getNextAddress",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -186,67 +199,67 @@
 			]
 		},
 		"contracts/governance/metaLifeDAO_Base.sol": {
-			"keccak256": "0x769f66176a64ac4b9f865296eae0b3b22727edbe8821b9b2c638347be8d70bdb",
+			"keccak256": "0xae786e373e1ea099b2804ff1754d8f641625e4c6df189e4e0b38c468bd3dc762",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://b5451eb8bbf76658869a0f9f46df726f8b1a0cf275b65f5f3fae7b04165661bf",
-				"dweb:/ipfs/QmS39oM3q2d2YB4voVcAVdaF9eNzq8Uy1jaAva3BBzTqbB"
+				"bzz-raw://8f9c5d87ef502765af1b973d716d3bb1ded9bab63915bfda4c86ff5e58e7307b",
+				"dweb:/ipfs/QmRPhWQpc19vHVy9mYCjqwc6KdBkhtV3Ci3mSZ7R3TbJBu"
 			]
 		},
 		"contracts/governance/metaLifeDAO_Crowdfund.sol": {
-			"keccak256": "0xe058728e03033227ef51ab71073d7e44cdef76087382dc4e4052ff9879f7a1b6",
+			"keccak256": "0x637369b6f93e2719359336c876e3cb4d22495e8737be26fa545ff78b25db82cb",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://2ada2138afc33a50312dfdb6f8ebdb8236f28be303bcbcf29a9acff276f348a4",
-				"dweb:/ipfs/QmbNgwK7eT1vsHPdvnMDCJyZqDDzurHiQyFQZqt9DiD86W"
+				"bzz-raw://af4f88c3d72a0bd604a0399f5c388120b9a61f1d800d406dd20068e122f073ef",
+				"dweb:/ipfs/QmbH5myYKNVH33q1rrBmpbv5utSozo1sMiVpzgGw31v6h2"
 			]
 		},
 		"contracts/governance/metaLifeDAO_NFT.sol": {
-			"keccak256": "0xc70f431623b01d37a06cbf204d0d26a7ef9e8bc145282b3edf09fd3a47c50fc7",
+			"keccak256": "0xd0674599e075f3e0f89b1c611988127e0eb8718520927341bbcba2b836d426aa",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://17ffdc2e849553c50a2d5424d7d4d0099aef6e983cc870f342823714350559ed",
-				"dweb:/ipfs/QmSQxUzZn5w9WLA3dxeJtKenrDWx4DMit9cCjupgqfXAcm"
+				"bzz-raw://d3a74135a95c4db3a3a59dd37244c6a292f9577f56f11a504a5825b1751ddf40",
+				"dweb:/ipfs/QmTYUvVvAVfn6U9y2LHkMjse4zc5U83E8NuAEguSTPsUR1"
 			]
 		},
 		"contracts/governance/metaLifeDAO_NFTtoCoin.sol": {
-			"keccak256": "0x98dfc76c7620bc1dd85c5e6e2ffb77b80320d6003644bae892534ed6318a4b82",
+			"keccak256": "0xac65df8c08fc63fdb2b2f07002db00213ab9b9ff4a19dd980d386af0f330f1ee",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://8e71be576185a4d1499e7d68eea5a6acbc8cc9b5f94f0f77c669eb6fa979653d",
-				"dweb:/ipfs/QmZQ54sHr1f6ovcph93rBaT2J1Rb3H4djpy1yq5tcECWDN"
+				"bzz-raw://6f6f1839dea2f3a7db269413b204a115113f13340049c04191648c26e8bcb6b4",
+				"dweb:/ipfs/QmXuSr42kzz51tfy8JEMPBq6LXmxfVaPaWN4fBC4E12DYu"
 			]
 		},
 		"contracts/governance/metaLifeDAO_Simple.sol": {
-			"keccak256": "0x96c0cbff0f3bc60951a2933c7ed512907c651700e6a37aa58816931650b9d287",
+			"keccak256": "0x283b022965c07648f81289cc44fe6e1b0722444b25108db17e8a621a514f9f77",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://9ddb47d03e4bf320e44fbf45794c37dea97dadd94bdf6e4e43c5e791656af02b",
-				"dweb:/ipfs/QmeovQdf2mAXzsevTVSp3AGCwsiiFjmBcWKSbhsCVkPFZn"
+				"bzz-raw://051e200635c815a7504e9a222704ec2ab296a380e459742bcd4b8f95d152e775",
+				"dweb:/ipfs/QmNkxafbLw2yrenBksEbKm8pPTGKgwGdmG2HZFJRFiVTYD"
 			]
 		},
 		"contracts/governance/metaLifeDAO_withCoin.sol": {
-			"keccak256": "0xc9864f92c9c953b4349fae35ac9a4312565a5b891bf68163b84d48fdf9155a61",
+			"keccak256": "0xc525133d168a957dc54fb6f150ea448ea8e566f2233addd728aca9dcfa073746",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://21ea257929132870b24fde3828b3d7b6b3a18e5625f823e35ed963c57bd39e3a",
-				"dweb:/ipfs/QmT5dUbhsRtjuFnF4sgoCEqSuLdyxSqiANdqU31NgAjzj4"
+				"bzz-raw://a0ffe15870fef5ee7bb3a1d1748a13e3d6d9f8c48b5fd45375ab665f4136d6f2",
+				"dweb:/ipfs/QmSNSjECPLyz17B6RPPjfhfQWAdBJqxudhMUATax1NgrMw"
 			]
 		},
 		"contracts/governance/metaLifeDAO_withMember.sol": {
-			"keccak256": "0xcf4efe8863040e6223c16d12311359bd24707866d78dabd7583f0a452b8d9577",
+			"keccak256": "0x0fbca3d7a888c1af441fd5ec1a2f644d7fe143f6854f82ccef0b5b977339fb51",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://ebb3e0ce2960ecfb86da44d647634d0a275d1ad66f6b24fc616a6b6c63c24064",
-				"dweb:/ipfs/QmZ8iWFW4X4iv1yNpg3DcwwYPTE1ujW5sznrHE4mA3mSqL"
+				"bzz-raw://410b2173b90e7f69240c3f8e3eb6e551d1c2802ec90e2243b34a3116b9c0e34f",
+				"dweb:/ipfs/QmdS6trDWA192X99maTfiRU4ghJEngdyZoRY4z5xUdpxCu"
 			]
 		},
 		"contracts/metaLifeDAO_creator.sol": {
-			"keccak256": "0x27e308aa2468160986d058fafbe7e028b35dd02944eec2693c7484db60fdec06",
+			"keccak256": "0x179742f3a15e8b9838a33779c43d6da208976a86daa02908c7e60c63ca901ff2",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://2a44fcb33533e808446750cb419c966d3d47b4f5c02e3536f7757d7bbc2682f0",
-				"dweb:/ipfs/QmduegBymNMihL3LizTV9gKbMrNXP4BMm9C6vXUHmWEVhf"
+				"bzz-raw://f62f779bbc1ef4639c142e79e68e27a88970658d25e028540257d81eefb8c9e3",
+				"dweb:/ipfs/QmbfA78aLLSwSxEGJbBWw8MvzXw9Z6gd6VEHww59wnbLqL"
 			]
 		}
 	},

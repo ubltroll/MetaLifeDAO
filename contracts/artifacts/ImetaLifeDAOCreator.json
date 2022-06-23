@@ -50,6 +50,7 @@
 		"gasEstimates": null,
 		"methodIdentifiers": {
 			"createDAO(bytes)": "5c65f2fb",
+			"getNextAddress()": "8f2696af",
 			"version()": "54fd4d50"
 		}
 	},
@@ -66,11 +67,24 @@
 			"outputs": [
 				{
 					"internalType": "address",
-					"name": "dao",
+					"name": "",
 					"type": "address"
 				}
 			],
 			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "getNextAddress",
+			"outputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"stateMutability": "view",
 			"type": "function"
 		},
 		{

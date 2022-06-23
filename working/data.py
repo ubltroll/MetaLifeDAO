@@ -1,102 +1,105 @@
 
 import peewee
 
-db_config = {
-    'host':'0.0.0.0',
-    'port':3306,
-    'user':'root',
-    'passwd':'XX!',
-    'database':'X',
-}
+db = peewee.SqliteDatabase('test.db')
 
-db=PooledMySQLDatabase(host=db_config['host'],
-                      port=db_config['port'],
-                      user=db_config['user'],
-                      passwd=db_config['passwd'],
-                      database=db_config['database'],
-                      charset='utf8',
-                      stale_timeout=1000,
-                      max_connections=100)
+class BaseModel(peewee.Model):
+    class Meta:
+        database = db
 
-class Address(peewee.Model):
-    address = peewee.CharField(unique = True, index = True)
-
-class DAOs(peewee.Model):
-    dao_id = peewee.AutoField()
-    name = peewee.CharField()
-    uri = peewee.CharField()
-    info = peewee.CharField()
+class DAOs(BaseModel):
+    address = peewee.CharField(primary_key=True)
     version = peewee.CharField()
-    creator = peewee.ForeignKeyField(Address, backref='create_DAOs', null = True) 
     erc20_address = peewee.CharField(index=True, null=True)
     erc721_address = peewee.CharField(index=True, null=True)
-    proposal_counts  = peewee.IntegerField()
-    immutables = peewee.CharField()
+    name = peewee.CharField(null=True)
+    uri = peewee.CharField(null=True)
+    info = peewee.CharField(null=True)
+    proposalThreshold = peewee.CharField(null=True)
+    votingPeriod = peewee.CharField(null=True)
+    quorumFactorInBP = peewee.CharField(null=True)
+    immutables = peewee.CharField(null=True)
     createBlock = peewee.IntegerField()
-    lastUpdateBlock = peewee.IntegerField()
+    lastUpdateBlock = peewee.IntegerField(null=True)
 
-class Proposals(peewee.Model):
-    proposal_id = peewee.AutoField()
-    dao = peewee.ForeignKeyField(DAOs, backref='proposals') 
-    id_in_dao = peewee.IntegerField(index=True)
-    vote_for = peewee.CharField()
-    vote_against = peewee.CharField()
-    vote_abstain = peewee.CharField()
-    quorum = peewee.CharField()
-    status = peewee.IntegerField()
-    start_block = peewee.IntegerField()
-    end_block = peewee.IntegerField()
-    lastUpdateBlock = peewee.IntegerField()
+class Proposals(BaseModel):
+    dao = peewee.ForeignKeyField(DAOs, backref = 'proposals')
+    idInDAO = peewee.IntegerField(index = True)
+    description = peewee.CharField()
+    proposer = peewee.CharField()
+    voteFor = peewee.CharField(default='0')
+    voteAgainst = peewee.CharField(default='0')
+    voteAbstain = peewee.CharField(default='0')
+    quorum = peewee.CharField(default='0')
+    createBlock = peewee.IntegerField()
+    startBlock = peewee.IntegerField()
+    endBlock   = peewee.IntegerField()
+    lastUpdateBlock = peewee.IntegerField(null=True)
 
-class ProposalCommands(peewee.Model):
-    proposal = peewee.ForeignKeyField(Proposals, backref='commands') 
-    pos = peewee.IntegerField(index=True)
+class ProposalCommands(BaseModel):
+    proposal = peewee.ForeignKeyField(Proposals, backref = 'commands')
+    index = peewee.IntegerField()
     target = peewee.CharField()
-    call_value = peewee.CharField()
-    call_data = peewee.CharField()
-
-class Votes(peewee.Model):
-    dao = peewee.ForeignKeyField(DAOs)
-    proposal = peewee.ForeignKeyField(Proposals, backref='commands') 
-    voter = peewee.ForeignKeyField(Address, backref='votes', null = True) 
-    weight = peewee.CharField() #or token_id in Votes for NFT
-    option = peewee.IntegerField()
+    value = peewee.CharField()
+    data = peewee.CharField()
     createBlock = peewee.IntegerField()
 
-class ERC20Trace(peewee.Model):
+class Votes(BaseModel):
+    dao = peewee.ForeignKeyField(DAOs, backref = 'votes')
+    proposal = peewee.ForeignKeyField(Proposals, backref = 'votes')
+    voter = peewee.CharField(index=True)
+    weight = peewee.CharField() #or token_id in Votes for NFT
+    support = peewee.IntegerField()
+    createBlock = peewee.IntegerField()
+
+class ERC20Trace(BaseModel):
     dao = peewee.ForeignKeyField(DAOs, backref='erc20')
-    holder = peewee.ForeignKeyField(Address, backref='votes', null = True) 
-    address = peewee.CharField()
+    holder = peewee.CharField(index = True, null=True)
+    address = peewee.CharField(null=True)
     balance = peewee.CharField(default='0')
+    lastUpdateBlock = peewee.IntegerField(null=True)
+
+class Delegates(BaseModel):
+    dao = peewee.ForeignKeyField(DAOs, backref='delegates')
+    delegator = peewee.CharField(index = True)
+    delegatee = peewee.CharField(index = True)
     lastUpdateBlock = peewee.IntegerField()
 
-class Delegates(peewee.Model):
+class ERC721Trace(BaseModel):
     dao = peewee.ForeignKeyField(DAOs, backref='erc721')
-    delegator = peewee.ForeignKeyField(Address, backref='as_delegator')
-    delegatee = peewee.ForeignKeyField(Address, backref='as_delegatee')
+    holder = peewee.CharField(index = True,null=True)
+    address = peewee.CharField(null=True)
+    tokenId = peewee.IntegerField(index=True,null=True)
+    lastUpdateBlock = peewee.IntegerField(null=True)
+
+class ERC20(BaseModel):
+    address = peewee.CharField(primary_key=True)
+    name = peewee.CharField()
+    symbol = peewee.CharField()
+    decimals = peewee.IntegerField()
+
+class ERC20TraceForDAO(BaseModel):
+    dao = peewee.ForeignKeyField(DAOs, backref='trace')
+    from_ = peewee.CharField()
+    to_ = peewee.CharField()
+    token_address = peewee.ForeignKeyField(ERC20, backref='trace')
+    amount = peewee.CharField()
     lastUpdateBlock = peewee.IntegerField()
 
-class ERC721Trace(peewee.Model):
-    dao = peewee.ForeignKeyField(DAOs, backref='erc721')
-    holder = peewee.ForeignKeyField(Address, backref='votes', null = True) 
-    address = peewee.CharField()
-    token_id = peewee.IntegerField(index=True)
-    delegatee = peewee.CharField(null=True, index=True)
-    lastUpdateBlock = peewee.IntegerField()
-
-class System(peewee.Model):
+class System(BaseModel):
     key = peewee.CharField(index=True)
     value = peewee.CharField()
 
 try:
     System.get()
-except peewee.ProgrammingError:
+except peewee.OperationalError:
     _init = True
 else:
     _init = False
 
 if _init:
     print('initing database')
-    db.create_tables([Address, DAOs, Proposals, ProposalCommands, Votes, ERC20Trace, ERC721Trace, System])
-    System.create(key='block', value='9280473')
-    System.create(key='factory', value='0xCe1Fb1Fd381BdEf930aAc419d9fddaC4FD18840F')
+    db.create_tables([DAOs, Votes, ERC20Trace, ERC721Trace, Delegates, System, ERC20, ERC20TraceForDAO,
+        Proposals, ProposalCommands])
+    System.create(key='block', value='9289940')
+    System.create(key='factory', value='0x84E72653155044a35FAd77FAFa122773Be28ad53')
