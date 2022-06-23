@@ -41,7 +41,7 @@ def command_transferERC721():
         'uint256',
         'uint256'],[
         str(request.json['to']),
-        int(request.json['amount'],
+        int(request.json['amount']),
         int(request.json['token_id'])])
     return jsonify({
     "value": 0,
@@ -209,22 +209,22 @@ def creator_crowdfund():
     return jsonify({"param": '0x'+ param.hex()})
 
 @app.route('/dao/info', methods=['GET', 'POST'])
-def get_DAO():
+def query_get_DAO():
     dao = request.json['dao']
     return jsonify(get_DAO(dao))
 
 @app.route('/dao/list', methods=['GET', 'POST'])
-def get_DAO_list():
+def query_get_DAO_list():
     limit = int(request.json.get('limit', 5))
-    offset = int(request.json.get('limit', 5))
+    offset = int(request.json.get('offset', 0))
     res = get_daos()
     return jsonify(make_page(res, limit, offset))
 
 @app.route('/dao/proposals', methods=['GET', 'POST'])
-def get_proposal():
+def query_get_proposal():
     dao = request.json['dao']
     limit = int(request.json.get('limit', 5))
-    offset = int(request.json.get('limit', 5))
+    offset = int(request.json.get('offset', 0))
     status = request.json.get('status')
     res = get_proposals(dao)
     if status is not None:
@@ -232,45 +232,51 @@ def get_proposal():
     return jsonify(make_page(res, limit, offset))
 
 @app.route('/dao/vote', methods=['GET', 'POST'])
-def get_vote():
+def query_get_vote():
     dao = request.json['dao']
     limit = int(request.json.get('limit', 5))
-    offset = int(request.json.get('limit', 5))
+    offset = int(request.json.get('offset', 0))
     proposal_id = request.json.get('proposal_id')
     if proposal_id is not None:
         proposal_id = int(proposal_id)
-    res = get_votes(dao, proposal_id)
+    res = get_vote(dao, proposal_id)
     return jsonify(make_page(res, limit, offset))
 
 @app.route('/dao/member', methods=['GET', 'POST'])
-def get_dao_member():
+def query_get_dao_member():
     dao = request.json['dao']
     limit = int(request.json.get('limit', 5))
-    offset = int(request.json.get('limit', 5))
+    offset = int(request.json.get('offset', 0))
     res = get_DAO_member(dao)
     return jsonify(make_page(res, limit, offset))
 
 @app.route('/dao/erc20Trace', methods=['GET', 'POST'])
-def get_dao_trace():
+def query_get_dao_trace():
     dao = request.json['dao']
     limit = int(request.json.get('limit', 5))
-    offset = int(request.json.get('limit', 5))
-    res = erc20Trace(dao)
+    offset = int(request.json.get('offset', 0))
+    res = get_DAO_trace(dao)
     return jsonify(make_page(res, limit, offset))
 
 @app.route('/address/daos', methods=['GET', 'POST'])
-def get_address_daos():
+def query_get_address_daos():
     res = get_address_dao(request.json['address'])
+    limit = int(request.json.get('limit', 5))
+    offset = int(request.json.get('offset', 0))
     return jsonify(make_page(res, limit, offset))
 
 @app.route('/address/votes', methods=['GET', 'POST'])
-def get_address_votes():
+def query_get_address_votes():
     res = get_address_vote(request.json['address'])
+    limit = int(request.json.get('limit', 5))
+    offset = int(request.json.get('offset', 0))
     return jsonify(make_page(res, limit, offset))
 
 @app.route('/address/proposals', methods=['GET', 'POST'])
-def get_address_proposals():
+def query_get_address_proposals():
     res = get_address_proposal(request.json['address'])
+    limit = int(request.json.get('limit', 5))
+    offset = int(request.json.get('offset', 0))
     return jsonify(make_page(res, limit, offset))
 
 if __name__ =='__main__':

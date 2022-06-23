@@ -93,6 +93,8 @@ def get_vote_core(items):
     res = []
     for item in items:
         res.append({
+            'dao': item.dao.address,
+            'proposalId': item.proposal.idInDAO,
             'voter': item.voter,
             'support': item.support,
             'weight': adjust_value(item.weight, item.dao),
@@ -225,9 +227,11 @@ def command_explainer(call_data):
     if call_data[:2] != '0x':
         call_data = '0x' + call_data
     try:
+        func = known_functions[call_data[:10]]['func']
         return {
-            'func': known_functions[call_data[:10]]['func'],
-            'params': known_functions[call_data[:10]]['decode'](call_data)
+            'func': func,
+            'params': decode_abi(func.split('(')[1].split(')')[0].split(','),
+                            bytes.fromhex(call_data[10:]))
             }
     except:
         return None
