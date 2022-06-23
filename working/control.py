@@ -210,6 +210,7 @@ known_functions_raw=[
     'setName(string)',
     'setURI(string)',
     'setInfo(string)',
+    'setCoinsPerNFT(uint256)',
     'approve(address,uint256)',
     'approve(address,uint256,uint256)'
     ]

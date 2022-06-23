@@ -92,7 +92,7 @@ contract metaLifeDAONFT is metaLifeDAOSimple{
         uint256 tokenId
     ) public virtual returns (uint256) {
         require(IERC721(bindedNFT).ownerOf(tokenId) == msg.sender);
-        
+
         return _castVoteWithTokenId(proposalId, msg.sender, support, tokenId);
     }
 

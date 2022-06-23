@@ -3,7 +3,7 @@ from data import *
 from control import *
 
 web3 = Web3(Web3.HTTPProvider("https://jsonapi1.smartmesh.io"))
-import eth_abi.abi.encode_abi as encode_abi
+from eth_abi.abi import encode_abi
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
@@ -24,7 +24,7 @@ def command_mint():
     "param": Web3.keccak(text='mint(address,uint256)').hex()[:10]+param.hex()})
 
 @app.route('/encode/command/transferERC20', methods=['GET', 'POST'])
-def command_mint():
+def command_mtransferERC20():
     param = encode_abi([
         'address',
         'uint256'],[
@@ -38,9 +38,11 @@ def command_mint():
 def command_transferERC721():
     param = encode_abi([
         'address',
+        'uint256',
         'uint256'],[
         str(request.json['to']),
-        int(request.json['amount'])])
+        int(request.json['amount'],
+        int(request.json['token_id'])])
     return jsonify({
     "value": 0,
     "param": Web3.keccak(text='transfer(address,uint256,uint256)').hex()[:10]+param.hex()})
@@ -167,6 +169,7 @@ def creator_NFTtoCoin():
         'string',
         'uint64',
         'uint256',
+        'address',
         'uint8',
         'uint256'],[
         str(request.json['daoName']),
@@ -174,8 +177,9 @@ def creator_NFTtoCoin():
         str(request.json['daoInfo']),
         int(request.json['votingPeriod']),
         int(request.json['quorumFactorInBP']),
-        int(request.json['decimals'],
-        int(request.json['coinsPerNFT'] ])
+        web3.toChecksumAddress(str(request.json['bindedNFT'])),
+        int(request.json['decimals']),
+            int(request.json['coinsPerNFT']) ])
     return jsonify({"param": '0x'+ param.hex()})
 
 @app.route('/encode/creator/Crowdfund', methods=['GET', 'POST'])
@@ -224,7 +228,7 @@ def get_proposal():
     status = request.json.get('status')
     res = get_proposals(dao)
     if status is not None:
-        res = [item if item['status']==int(status) for item in res]
+        res = [item for item in res if item['status']==int(status)]
     return jsonify(make_page(res, limit, offset))
 
 @app.route('/dao/vote', methods=['GET', 'POST'])
@@ -239,7 +243,7 @@ def get_vote():
     return jsonify(make_page(res, limit, offset))
 
 @app.route('/dao/member', methods=['GET', 'POST'])
-def get_vote():
+def get_dao_member():
     dao = request.json['dao']
     limit = int(request.json.get('limit', 5))
     offset = int(request.json.get('limit', 5))
@@ -247,7 +251,7 @@ def get_vote():
     return jsonify(make_page(res, limit, offset))
 
 @app.route('/dao/erc20Trace', methods=['GET', 'POST'])
-def get_vote():
+def get_dao_trace():
     dao = request.json['dao']
     limit = int(request.json.get('limit', 5))
     offset = int(request.json.get('limit', 5))
@@ -255,16 +259,19 @@ def get_vote():
     return jsonify(make_page(res, limit, offset))
 
 @app.route('/address/daos', methods=['GET', 'POST'])
-def get_DAOs():
+def get_address_daos():
     res = get_address_dao(request.json['address'])
     return jsonify(make_page(res, limit, offset))
 
 @app.route('/address/votes', methods=['GET', 'POST'])
-def get_DAOs():
+def get_address_votes():
     res = get_address_vote(request.json['address'])
     return jsonify(make_page(res, limit, offset))
 
 @app.route('/address/proposals', methods=['GET', 'POST'])
-def get_DAOs():
+def get_address_proposals():
     res = get_address_proposal(request.json['address'])
     return jsonify(make_page(res, limit, offset))
+
+if __name__ =='__main__':
+    app.run(port=5050, debug = True)
