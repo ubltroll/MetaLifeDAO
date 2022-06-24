@@ -5,10 +5,12 @@ import "./metaLifeDAO_Simple.sol";
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/Checkpoints.sol";
+import "@openzeppelin/contracts/utils/Timers.sol";
 
 
 abstract contract _metaLifeDAOwithCoin is ERC20, metaLifeDAOiwthDelegation, metaLifeDAOSimple {
     using Checkpoints for Checkpoints.History;
+    using Timers for Timers.BlockNumber;
 
     //------------
     //Override Interface
@@ -64,6 +66,9 @@ abstract contract _metaLifeDAOwithCoin is ERC20, metaLifeDAOiwthDelegation, meta
     }
 
     function getPastVotes(address account, uint256 blockNumber) internal view virtual returns (uint256) {
+        if(blockNumber < proposalCounts){ //reuse blockNumber as proposalId
+            blockNumber = _proposals[blockNumber].voteStart.getDeadline();
+        }
         return _delegateCheckpoints[account].getAtBlock(blockNumber);
     }
 

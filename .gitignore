@@ -5,3 +5,4 @@ build/
 *.db
 __pycache__/
 artifacts/
+*.log

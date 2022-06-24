@@ -43,6 +43,10 @@ contract metaLifeDAONFT is metaLifeDAOSimple{
         }
     }
 
+    function getVotes(address account) public view virtual returns (uint256 votes){
+        return IERC721(bindedNFT).balanceOf(account);
+    }
+
     function _checkVote(uint256 proposalId, address account) internal virtual override {}
 
     function _castVote(
