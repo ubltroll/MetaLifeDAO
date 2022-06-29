@@ -3,7 +3,9 @@ pragma solidity ^0.8.0;
 
 import "./governance/metaLifeDAO_withCoin.sol";
 import "./governance/metaLifeDAO_withMember.sol";
+import "./governance/metaLifeDAO_Coin2Coin.sol";
 import "./governance/metaLifeDAO_NFT.sol";
+import "./governance/metaLifeDAO_NFT2.sol";
 import "./governance/metaLifeDAO_NFTtoCoin.sol";
 import "./governance/metaLifeDAO_Crowdfund.sol";
 
@@ -97,6 +99,30 @@ contract creator_NFT is metaLifeDAOCreator{
     }
 }
 
+contract creator_NFT2 is metaLifeDAOCreator{
+    address public metaMasterContract;
+
+    function version() public pure override returns(string memory){
+        return "MetaLifeDAO:212:NFT2";
+    }
+
+    function _createDAO(bytes memory param) internal override returns(address dao){
+        (string memory _daoName,
+        string memory _daoURI,
+        string memory _daoInfo,
+        uint64 votingPeriod_,
+        uint256 quorumFactorInBP_,
+        string memory _baseURI,
+        uint256 _max_supply,
+        address starter_)= abi.decode(param, (string,string,string,uint64,uint256,string,uint256,address));
+        dao = address(new metaLifeDAONFT2(_daoName, _daoURI, _daoInfo, votingPeriod_, quorumFactorInBP_, metaMasterContract, _baseURI, _max_supply, starter_));
+    }
+
+    constructor(address _metaMasterContract){
+        metaMasterContract = _metaMasterContract;
+    }
+}
+
 contract creator_NFTtoCoin is metaLifeDAOCreator{
     function version() public pure override returns(string memory){
         return "MetaLifeDAO:202:NFTtoCoin";
@@ -133,5 +159,21 @@ contract creator_Crowdfund is metaLifeDAOCreator{
         address _starter)= abi.decode(param, (string,string,string,uint64,uint256,address,uint256,uint256,uint64,address));
         dao = address(new metaLifeDAOCrowdfund(_daoName, _daoURI, _daoInfo, votingPeriod_, quorumFactorInBP_,
             _fundingToken, _fundingGoal, _fundingTokenToVotes, _fundingPeriod, _starter));
+    }
+}
+
+contract creator_Coin2Coin is metaLifeDAOCreator{
+    function version() public pure override returns(string memory){
+        return "MetaLifeDAO:104:Coin2Coin";
+    }
+
+    function _createDAO(bytes memory param) internal override returns(address dao){
+        (string memory _daoName,
+        string memory _daoURI,
+        string memory _daoInfo,
+        uint64 votingPeriod_,
+        uint256 quorumFactorInBP_,
+        address bindedCoin_)= abi.decode(param, (string,string,string,uint64,uint256,address));
+        dao = address(new metaLifeDAOCoin2Coin(_daoName, _daoURI, _daoInfo, votingPeriod_, quorumFactorInBP_, bindedCoin_));
     }
 }

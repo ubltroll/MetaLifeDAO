@@ -188,4 +188,8 @@ abstract contract metaLifeDAOSimple is metaLifeDAOiwthDelegation, metaLifeDAOCon
 
         return proposalvote.forVotes > proposalvote.againstVotes;
     }
+
+    event DAOCanceled();
+
+    function cancelDAO() external virtual;
 }

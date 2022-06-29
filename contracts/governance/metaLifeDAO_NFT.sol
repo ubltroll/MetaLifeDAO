@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 
-contract metaLifeDAONFT is metaLifeDAOSimple{
+abstract contract _metaLifeDAONFT is metaLifeDAOSimple{
 
     //------------
     //NFT binding
@@ -25,7 +25,7 @@ contract metaLifeDAONFT is metaLifeDAOSimple{
     //Override Interface: Extended Governance
     //------------
 
-    string private constant _version="MetaLifeDAO:201:NFT";
+    string private constant _version="ABSTRACT";
 
     function version () public view virtual override returns (string memory){
         return _version;
@@ -134,7 +134,12 @@ contract metaLifeDAONFT is metaLifeDAOSimple{
     }
 
     function quorum() public view virtual returns (uint256){
-        return IERC20(bindedNFT).totalSupply();
+        return IERC20(bindedNFT).totalSupply() * quorumFactorInBP()/ 10000;
+    }
+
+    function cancelDAO() external override {
+        require(getVotes(msg.sender) == quorum());
+        emit DAOCanceled();
     }
 
     mapping(uint256 => uint256) internal quorumSnapshot;
@@ -143,6 +148,11 @@ contract metaLifeDAONFT is metaLifeDAOSimple{
         proposalId;
         quorumSnapshot[block.number] = quorum();
     }
+}
+
+
+contract metaLifeDAONFT is _metaLifeDAONFT{
+    string private constant _version="MetaLifeDAO:201:NFT";
 
     constructor (string memory _daoName,
         string memory _daoURI,

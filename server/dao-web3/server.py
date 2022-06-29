@@ -178,7 +178,45 @@ def creator_NFTtoCoin():
         int(request.json['quorumFactorInBP']),
         web3.toChecksumAddress(str(request.json['bindedNFT'])),
         int(request.json['decimals']),
-            int(request.json['coinsPerNFT']) ])
+        int(request.json['coinsPerNFT']) ])
+    return jsonify({"param": '0x'+ param.hex()})
+
+@app.route('/encode/creator/Coin2Coin', methods=['GET', 'POST'])
+def creator_Coin2Coin():
+    param = encode_abi([
+        'string',
+        'string',
+        'string',
+        'uint64',
+        'uint256',
+        'address'],[
+        str(request.json['daoName']),
+        str(request.json['daoURI']),
+        str(request.json['daoInfo']),
+        int(request.json['votingPeriod']),
+        int(request.json['quorumFactorInBP']),
+        web3.toChecksumAddress(str(request.json['bindedCoin'])) ])
+    return jsonify({"param": '0x'+ param.hex()})
+
+@app.route('/encode/creator/NFT2', methods=['GET', 'POST'])
+def creator_NFT2():
+    param = encode_abi([
+        'string',
+        'string',
+        'string',
+        'uint64',
+        'uint256',
+        'string',
+        'uint256',
+        'address'],[
+        str(request.json['daoName']),
+        str(request.json['daoURI']),
+        str(request.json['daoInfo']),
+        int(request.json['votingPeriod']),
+        int(request.json['quorumFactorInBP']),
+        str(request.json['baseURI']),
+        int(request.json['maxSupply']),
+        web3.toChecksumAddress(str(request.json['starter'])) ])
     return jsonify({"param": '0x'+ param.hex()})
 
 @app.route('/encode/creator/Crowdfund', methods=['GET', 'POST'])

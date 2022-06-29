@@ -30,6 +30,11 @@ abstract contract _metaLifeDAOwithCoin is ERC20, metaLifeDAOiwthDelegation, meta
         return getPastVotes(account, blockNumber);
     }
 
+    function cancelDAO() external override {
+        require(getVotes(msg.sender) == totalSupply());
+        emit DAOCanceled();
+    }
+
     //------------
     //ERC20 Module
     //------------
