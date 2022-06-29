@@ -178,6 +178,8 @@ contract metaLifeDAOCrowdfund is _metaLifeDAOwithCoin {
         receives = amount * fundingTokenToVotes;
         _metaLifeDAOwithCoin(this).mint(msg.sender, receives);
 
+        fundingContribution[msg.sender] += amount;
+
         _countVote(0, msg.sender,  uint8(metaLifeDAOSimple.VoteType.For), receives);
 
         emit VoteCast(msg.sender, 0,  uint8(metaLifeDAOSimple.VoteType.For), receives);
