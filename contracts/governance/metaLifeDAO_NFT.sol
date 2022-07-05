@@ -31,10 +31,10 @@ abstract contract _metaLifeDAONFT is metaLifeDAOSimple{
         return _version;
     }
 
-    function getVotes(address account, uint256 proposalId) public view virtual override returns (uint256 votes){
+    function getVotes(address account, uint256 blockNumber) public view virtual override returns (uint256 votes){
         //no snapshot for external governance token
         //uint256 blockNumber is reused as uint256 proposalId here
-        uint256 balance = IERC20(bindedNFT).balanceOf(account);
+        uint256 balance = IERC721(bindedNFT).balanceOf(account);
         for (uint i; i < balance; i++){
             uint256 tokenId = IERC721Enumerable(bindedNFT).tokenOfOwnerByIndex(account, i);
             if (_voteByTokenIdAndProposalId[tokenId][proposalId] == 0){
