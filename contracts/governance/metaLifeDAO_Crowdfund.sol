@@ -120,7 +120,7 @@ contract metaLifeDAOCrowdfund is _metaLifeDAOwithCoin {
 
         proposalCounts = 1;
     }
-
+    //truffle style: override(metaLifeDAOBase, metaLifeDAOSimple), remix style: override
     function _quorumReached(uint256 proposalId) internal view override virtual returns (bool){
         if(proposalId == 0){
             if (fundingToken == address(0)){

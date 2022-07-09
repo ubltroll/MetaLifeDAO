@@ -8,7 +8,8 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 
 abstract contract _metaLifeDAONFT is metaLifeDAOSimple{
-
+    using SafeCast for uint256;
+    using Timers for Timers.BlockNumber;
     //------------
     //NFT binding
     //------------
@@ -31,15 +32,31 @@ abstract contract _metaLifeDAONFT is metaLifeDAOSimple{
         return _version;
     }
 
-    function getVotes(address account, uint256 proposalId) public view virtual override returns (uint256 votes){
+    function getVotes(address account, uint256 proposalId) public view override returns (uint256 votes){
         //no snapshot for external governance token
         //uint256 blockNumber is reused as uint256 proposalId here
         uint256 balance = IERC721(bindedNFT).balanceOf(account);
-        for (uint i; i < balance; i++){
-            uint256 tokenId = IERC721Enumerable(bindedNFT).tokenOfOwnerByIndex(account, i);
-            if (_voteByTokenIdAndProposalId[tokenId][proposalId] == 0){
-                votes += 1;
+        if (isBindedNFTEnumerable()) {
+            for (uint i; i < balance; i++){
+                uint256 tokenId = IERC721Enumerable(bindedNFT).tokenOfOwnerByIndex(account, i);
+                if (_voteByTokenIdAndProposalId[tokenId][proposalId] == 0){
+                    votes += 1;
+                }
             }
+        } else {
+            votes = balance;
+        }
+        
+    }
+
+
+    function isBindedNFTEnumerable() public view returns (bool){
+        try IERC721Enumerable(bindedNFT).tokenByIndex(0) {
+            //binded NFT is ERC721Enumerable
+            return true;
+        } catch {
+            //binded NFT is not ERC721Enumerable
+            return false;
         }
     }
 
@@ -54,6 +71,7 @@ abstract contract _metaLifeDAONFT is metaLifeDAOSimple{
         address account,
         uint8 support
     ) internal virtual override returns (uint256 votes) {
+        require(isBindedNFTEnumerable(), "Not supported");
         require(_state(proposalId) == ProposalState.Active, "Inactive");
 
         uint256 balance = IERC20(bindedNFT).balanceOf(account);
@@ -134,7 +152,12 @@ abstract contract _metaLifeDAONFT is metaLifeDAOSimple{
     }
 
     function quorum() public view virtual returns (uint256){
-        return IERC20(bindedNFT).totalSupply() * quorumFactorInBP()/ 10000;
+        if (isBindedNFTEnumerable()){
+            return IERC721Enumerable(bindedNFT).totalSupply() * quorumFactorInBP()/ 10000;
+        } else {
+            return quorumFactorInBP();
+        }
+        
     }
 
     function cancelDAO() external override {
@@ -149,51 +172,7 @@ abstract contract _metaLifeDAONFT is metaLifeDAOSimple{
         quorumSnapshot[block.number] = quorum();
     }
 
-    function propose(
-        address[] memory targets,
-        uint256[] memory values,
-        bytes[] memory calldatas,
-        string memory description
-    ) public virtual override returns (uint256) {
-        require(
-            IERC721(bindedNFT).balanceOf(msg.sender) >= proposalThreshold(),
-            "Below threshold"
-        );
 
-        uint256 proposalId = proposalCounts;
-        proposalCounts += 1;
-
-        require(targets.length == values.length, "Invalid proposal");
-        require(targets.length == calldatas.length, "Invalid proposal");
-        require(targets.length > 0, "Invalid proposal");
-
-        ProposalCore storage proposal = _proposals[proposalId];
-        require(proposal.voteStart.isUnset(), "Invalid proposal");
-
-        uint64 snapshot = block.number.toUint64() + votingDelay().toUint64();
-        uint64 deadline = snapshot + votingPeriod().toUint64();
-
-        proposal.description = description;
-        proposal.commandCounts = targets.length.toUint64();
-        for (uint i; i < targets.length; i++){
-            proposal.commands[i].target = targets[i];
-            proposal.commands[i].value  = values[i];
-            proposal.commands[i].data   = calldatas[i];
-        }
-        proposal.voteStart.setDeadline(snapshot);
-        proposal.voteEnd.setDeadline(deadline);
-
-        _afterProposalCreation(proposalId);
-
-        emit ProposalCreated(
-            proposalId,
-            msg.sender,
-            snapshot,
-            deadline,
-            description
-        );
-        return proposalId;
-    }
 }
 
 

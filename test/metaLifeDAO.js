@@ -5,7 +5,7 @@ const BasicNFT = artifacts.require("BasicNFT");
 const EnumerableNFT = artifacts.require("EnumerableNFT");
 const DAOnft = artifacts.require("metaLifeDAONFT");
 const creator_withCoin = artifacts.require("creator_withCoin");
-
+/*
 contract('metaLifeDAO with Coin', (accounts) => {
     zero_address = "0x0000000000000000000000000000000000000000";
     let daoCoin;
@@ -79,7 +79,7 @@ contract('metaLifeDAOfor Crowdfunding', (accounts) => {
       {from: accounts[0]});
      assert.equal(await daoCoin.proposalState.call(1), 4); //Success
      await daoCoin.execute(
-        0,
+        1,
         {from: accounts[3]}
     );
  });
@@ -93,49 +93,57 @@ contract('metaLifeDAO factory', (accounts) => {
      creator101 = await creator_withCoin.new();
      await factory.setTokenFee(zero_address, 0, true, {from: accounts[0]});
      await factory.setDAOCreator(creator101.address);
-     /*
-     pack(['string', 'string', 'string', 'uint64', 'uint256', 'address[]', 'uint256[]'],
-      ["testDAO", "testURI", "test", 100, 4500, ['0x538fD2884b743b3FEfE8D495c95C81db9e83e58a'], [1000000]])
-     */
+    // pack(['string', 'string', 'string', 'uint64', 'uint256', 'address[]', 'uint256[]'],
+    //  ["testDAO", "testURI", "test", 100, 4500, ['0x538fD2884b743b3FEfE8D495c95C81db9e83e58a'], [1000000]])
      res = await factory.createWithValue("MetaLifeDAO:101:withCoin",
      '0x00000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000012000000000000000000000000000000000000000000000000000000000000001600000000000000000000000000000000000000000000000000000000000000064000000000000000000000000000000000000000000000000000000000000119400000000000000000000000000000000000000000000000000000000000001a000000000000000000000000000000000000000000000000000000000000001e000000000000000000000000000000000000000000000000000000000000000077465737444414f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000077465737455524900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000474657374000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000538fd2884b743b3fefe8d495c95c81db9e83e58a000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000f4240')
   });
 })
-
+*/
 contract('metaLifeDAO for NFT', (accounts) => {
   zero_address = "0x0000000000000000000000000000000000000000";
   let daoNFT;
   it('should handle Enumerable ERC721', async () =>{
-      nft_enumerable = await EnumerableNFT.new(accounts[0]);
-      daoNFT = await DAOnft.new("testDAO", "testURI", "test", 100, 4500, nft_enumerable.address, accounts[0]);
+      nft_enumerable = await EnumerableNFT.new();
+      assert.equal(await nft_enumerable.balanceOf.call(accounts[0]), 1);
+      assert.equal(await nft_enumerable.ownerOf.call(1), accounts[0]);
+      daoNFT = await DAOnft.new("testDAO", "testURI", "test", 100, 4500, nft_enumerable.address);
+      assert.equal(await daoNFT.getVotes.call(accounts[0]), 1); 
+      //assert.equal(await daoNFT.getVotes.call(accounts[0],1), 1);
       await daoNFT.propose(
         [zero_address],
         [0],
         [[]],
         'dummy propose',
         { from: accounts[0]});
-        await daoCoin.castVote(
+      //assert.equal(await daoNFT.getVotes.call(accounts[0],0), 1);
+      await daoNFT.castVote(
           0,1,
           { from: accounts[0]});
-        assert.equal(await daoCoin.proposalState.call(0), 4); //Success
-        await daoCoin.execute(
+      assert.equal(await daoNFT.proposalState.call(0), 4); //Success
+      await daoNFT.execute(
           0,
           { from: accounts[1]});
   });
   it('should handle Basic ERC721', async () =>{
-      nft_basic = await BasicNFT.new(accounts[0]);
-      daoNFT = await DAOnft.new("testDAO", "testURI", "test", 100, 4500, nft_basic.address, accounts[0]);
+      nft_basic = await BasicNFT.new();
+      assert.equal(await nft_basic.balanceOf.call(accounts[0]), 1);
+      assert.equal(await nft_basic.ownerOf.call(1), accounts[0]);
+      daoNFT = await DAOnft.new("testDAO", "testURI", "test", 100, 1, nft_basic.address);
+      assert.equal(await daoNFT.isBindedNFTEnumerable.call(), false);
+      assert.equal(await daoNFT.getVotes.call(accounts[0]), 1);
+      //assert.equal(await daoNFT.getVotes.call(accounts[0],1), 1);
       await daoNFT.propose(
         [zero_address],
         [0],
         [[]],
         'dummy propose',
         { from: accounts[0]});
-     await daoCoin.castVoteWithTokenId(
+      await daoNFT.castVoteWithTokenId(
           0,1,1,
           { from: accounts[0]});
-        assert.equal(await daoCoin.proposalState.call(0), 4); //Success
-     await daoCoin.execute(
+      assert.equal(await daoNFT.proposalState.call(0), 4); //Success
+      await daoNFT.execute(
           0,
           { from: accounts[1]});
   });
