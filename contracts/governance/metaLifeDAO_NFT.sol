@@ -31,7 +31,7 @@ abstract contract _metaLifeDAONFT is metaLifeDAOSimple{
         return _version;
     }
 
-    function getVotes(address account, uint256 blockNumber) public view virtual override returns (uint256 votes){
+    function getVotes(address account, uint256 proposalId) public view virtual override returns (uint256 votes){
         //no snapshot for external governance token
         //uint256 blockNumber is reused as uint256 proposalId here
         uint256 balance = IERC721(bindedNFT).balanceOf(account);
@@ -147,6 +147,52 @@ abstract contract _metaLifeDAONFT is metaLifeDAOSimple{
     function _afterProposalCreation(uint256 proposalId) internal virtual override {
         proposalId;
         quorumSnapshot[block.number] = quorum();
+    }
+
+    function propose(
+        address[] memory targets,
+        uint256[] memory values,
+        bytes[] memory calldatas,
+        string memory description
+    ) public virtual override returns (uint256) {
+        require(
+            IERC721(bindedNFT).balanceOf(msg.sender) >= proposalThreshold(),
+            "Below threshold"
+        );
+
+        uint256 proposalId = proposalCounts;
+        proposalCounts += 1;
+
+        require(targets.length == values.length, "Invalid proposal");
+        require(targets.length == calldatas.length, "Invalid proposal");
+        require(targets.length > 0, "Invalid proposal");
+
+        ProposalCore storage proposal = _proposals[proposalId];
+        require(proposal.voteStart.isUnset(), "Invalid proposal");
+
+        uint64 snapshot = block.number.toUint64() + votingDelay().toUint64();
+        uint64 deadline = snapshot + votingPeriod().toUint64();
+
+        proposal.description = description;
+        proposal.commandCounts = targets.length.toUint64();
+        for (uint i; i < targets.length; i++){
+            proposal.commands[i].target = targets[i];
+            proposal.commands[i].value  = values[i];
+            proposal.commands[i].data   = calldatas[i];
+        }
+        proposal.voteStart.setDeadline(snapshot);
+        proposal.voteEnd.setDeadline(deadline);
+
+        _afterProposalCreation(proposalId);
+
+        emit ProposalCreated(
+            proposalId,
+            msg.sender,
+            snapshot,
+            deadline,
+            description
+        );
+        return proposalId;
     }
 }
 
