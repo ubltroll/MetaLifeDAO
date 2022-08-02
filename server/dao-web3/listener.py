@@ -22,7 +22,10 @@ def erc20Transfer(log):
     print('IERC20.Transfer @', log['address'])
     from_ = web3.toChecksumAddress(log['topics'][1].hex()[-40:])
     to_ = web3.toChecksumAddress(log['topics'][2].hex()[-40:])
-    value, = decode_abi(['uint256'],bytes.fromhex(log['data'][2:]))
+    try:
+        value, = decode_abi(['uint256'],bytes.fromhex(log['data'][2:]))
+    except:
+        value = 0
     try:
         dao = DAOs.get(erc20_address = log['address'])
     except peewee.DoesNotExist:
