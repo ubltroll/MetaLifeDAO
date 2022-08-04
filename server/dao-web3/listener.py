@@ -171,28 +171,25 @@ def search_block(fromBlock , toBlock=None):
     for log in logs:
         #print(log['topics'][0].hex() )
         #look for NewMetaLifeDAO
-        try:
-            if (log['topics'][0].hex() == '0xfc56cfb07db536684194c9131a1fc720f6dbaf971d98eec304f9a04d85340d0e'
-                and log.address == System.get(key='factory').value):
-                print('newDAOListener')
-                newDAOListener(log)
-            #look for UpdateDAOMetaInfo
-            elif (log['topics'][0].hex() == '0x0476831fbd909e3642e5bbb00a1eaaf8af1b39b2e2d7e3268d024f3769572676'):
-                updateDAOMetaInfo(log.address, log['blockNumber'])
-            #look for newProposal
-            elif (log['topics'][0].hex() == '0xa00fcf4f5e03cc2f4818b8f380a8f2a06479e49bf0765e5fec09aebdaf922bbc'):
-                newProposal(log)
-            #look for Transfer ERC20
-            elif (log['topics'][0].hex() == '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'):
-                erc20Transfer(log)
-            #look for Transfer ERC721
-            elif (log['topics'][0].hex() == '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'):
-                erc721Transfer(log)
-            #look for VoteCast
-            elif (log['topics'][0].hex() == '0x2c9deb38f462962eadbd85a9d3a4120503ee091f1582eaaa10aa8c6797651d29'):
-                voteCast(log)
-        except:
-            continue
+        if (log['topics'][0].hex() == '0xfc56cfb07db536684194c9131a1fc720f6dbaf971d98eec304f9a04d85340d0e'
+            and log.address == System.get(key='factory').value):
+            print('newDAOListener')
+            newDAOListener(log)
+        #look for UpdateDAOMetaInfo
+        elif (log['topics'][0].hex() == '0x0476831fbd909e3642e5bbb00a1eaaf8af1b39b2e2d7e3268d024f3769572676'):
+            updateDAOMetaInfo(log.address, log['blockNumber'])
+        #look for newProposal
+        elif (log['topics'][0].hex() == '0xa00fcf4f5e03cc2f4818b8f380a8f2a06479e49bf0765e5fec09aebdaf922bbc'):
+            newProposal(log)
+        #look for Transfer ERC20
+        elif (log['topics'][0].hex() == '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'):
+            erc20Transfer(log)
+        #look for Transfer ERC721
+        elif (log['topics'][0].hex() == '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'):
+            erc721Transfer(log)
+        #look for VoteCast
+        elif (log['topics'][0].hex() == '0x2c9deb38f462962eadbd85a9d3a4120503ee091f1582eaaa10aa8c6797651d29'):
+            voteCast(log)
 
     System.update(value=str(toBlock)).where(System.key=='block').execute()
 
