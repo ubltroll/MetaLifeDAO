@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract metaLifeDAOFactory is Ownable {
     event NewMetaLifeDAO(address dao, string version);
+    event NewMetaLifeDAOReady();
 
     mapping(address => bool) public acceptalToken;
 
@@ -39,6 +40,7 @@ contract metaLifeDAOFactory is Ownable {
 
     function _create(string memory version, bytes memory param) internal returns(address dao){
         dao = ImetaLifeDAOCreator(creatorForDAO(version)).getNextAddress();
+        emit NewMetaLifeDAOReady();
         emit NewMetaLifeDAO(dao, ImetaLifeDAOCreator(creatorForDAO(version)).version());
         address deployed = ImetaLifeDAOCreator(creatorForDAO(version)).createDAO(param);
         assert(dao == deployed);
