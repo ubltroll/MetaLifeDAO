@@ -186,8 +186,10 @@ abstract contract metaLifeDAOBase is EIP712{
     ) internal virtual {
         string memory errorMessage = "Call reverted";
         for (uint256 i = 0; i < targets.length; ++i) {
-            (bool success, bytes memory returndata) = targets[i].call{value: values[i]}(calldatas[i]);
-            Address.verifyCallResult(success, returndata, errorMessage);
+            if (targets[i] != address(0)){
+                (bool success, bytes memory returndata) = targets[i].call{value: values[i]}(calldatas[i]);
+                Address.verifyCallResult(success, returndata, errorMessage);
+            }
         }
     }
 
@@ -214,6 +216,9 @@ abstract contract metaLifeDAOBase is EIP712{
         require(_state(proposalId) == ProposalState.Active, "Inactive");
 
         uint256 weight = getVotes(account, proposal.voteStart.getDeadline());
+        
+        require(weight > 0, "Must have weight");
+
         _countVote(proposalId, account, support, weight);
 
         emit VoteCast(account, proposalId, support, weight);
